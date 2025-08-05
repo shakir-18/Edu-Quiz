@@ -113,7 +113,7 @@ public class AdminService {
             List<Question> questions = questionRepository.findTop5ByTopicIgnoreCaseAndDifficultyIgnoreCase(
                     topic.getTopic(), topic.getDifficulty());
             if (questions.size() < 5) {
-                emailService.sendEmail("21211a05h5@bvrit.ac.in",
+                emailService.sendEmail("admin@gmail.com",
                         "Quiz Generation Failed",
                         "No enough questions for topic: " + topic.getTopic() + ", difficulty: " + topic.getDifficulty());
                 return;
@@ -147,8 +147,19 @@ public class AdminService {
             for (Attempt attempt : attempts) {
                 scores.put(attempt.getStudent().getName(), attempt.getScore());
             }
-            EmailService emailService = new EmailService();
-            emailService.sendEmail("shakir4236@gmail.com", "Result of quiz " + quiz.getId(), scores.toString());
+            emailService.sendEmail("admin@gmail.com", "Result of quiz " + quiz.getId(), scores.toString());
+        }
+    }
+    @Scheduled(cron = "0 0 * * 0")
+    public void sendPerformanceMails()
+    {
+        List<Student> students=studentRepository.findAll();
+        for(Student student:students)
+        {
+            String performance="Total Attempts : "+student.getTotal_attempts()+"\n"
+                    +"Total Score : "+student.getTotal_score()
+                    +"Average Score : "+student.getAvg_score()+"\n";
+            emailService.sendEmail(student.getEmail(),"Performance statistics",performance);
         }
     }
 
